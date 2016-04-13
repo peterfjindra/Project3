@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#the first and only argument for autograde is the directory containing the
-#assignments
 
 touch commands.txt #our expect script
 echo "#!/usr/bin/expect" >> commands.txt
