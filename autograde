@@ -3,16 +3,30 @@
 #the first and only argument for autograde is the directory containing the
 #assignments
 
-PROGRAMS=$1
-
 touch commands.txt #our expect script
+echo "#!/usr/bin/expect" >> commands.txt
 echo "spawn ./house" >> commands.txt
-echo "expect 'Enter the width of the house (in feet):  '" >> commands.txt
-echo "spawn 50" >> commands.txt
-echo ""
+echo "expect 'width:'" >> commands.txt
+echo "send 50\n" >> commands.txt
+echo "expect 'depth:'" >> commands.txt
+echo "send 20\n" >> commands.txt
+echo "expect" >> commands.txt
+echo "spawn ./house" >> commands.txt
+echo "expect 'width:'" >> commands.txt
+echo "send 10\n" >> commands.txt
+echo "expect 'depth:'" >> commands.txt
+echo "send 5\n" >> commands.txt
+echo "expect" >> commands.txt
+echo "spawn ./house" >> commands.txt
+echo "expect 'width:'" >> commands.txt
+echo "send 20\n" >> commands.txt
+echo "expect 'depth:'" >> commands.txt
+echo "send 100\n" >> commands.txt
+echo "expect" >> commands.txt
 
 
-for i in $( find $PROGRAMS -type d | tail -n+2); do
+mkdir reports
+for i in $( find CSI -type d | tail -n+2); do
 	#echo item: $i
 	touch temp_report.txt
 
@@ -25,11 +39,17 @@ for i in $( find $PROGRAMS -type d | tail -n+2); do
 	echo " " >> temp_report.txt
 	echo "Source code:" >> temp_report.txt
 	cat $i/house.c >> temp_report.txt
-	spawn $i/house
-
-	REPORTNAME= $()
-
-
-
-
+	cp commands.txt $i
+	cd $i
+	expect ./commands.txt >> ../../temp_report.txt
+	PDFEXT=".pdf"
+	REPORTNAME=$USERNAME$PDFEXT
+	cd ..
+	cd ..
+	enscript -2Gr --word-wrap -f Courier20 temp_report.txt -o - | ps2pdf - $REPORTNAME
+	mv $REPORTNAME ./reports/
+	rm $i/commands.txt
 done
+
+rm commands.txt
+rm temp_report.txt
