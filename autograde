@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#the first and only argument for autograde is the directory containing the
+#assignments
+
+PROGRAMS=$1
+
+touch commands.txt #our expect script
+echo "spawn ./house" >> commands.txt
+echo "expect 'Enter the width of the house (in feet):  '" >> commands.txt
+echo "spawn 50" >> commands.txt
+echo ""
+
+
+for i in $( find $PROGRAMS -type d | tail -n+2); do
+	#echo item: $i
+	touch temp_report.txt
+
+	USERNAME=$(echo $i | cut -f2 -d "/")
+	echo $USERNAME > temp_report.txt
+	cat $i/name.txt >> temp_report.txt
+	echo " " >> temp_report.txt
+	echo "Compilation errors: " >> temp_report.txt
+	gcc -o $i/house $i/house.c 2>> temp_report.txt
+	echo " " >> temp_report.txt
+	echo "Source code:" >> temp_report.txt
+	cat $i/house.c >> temp_report.txt
+	spawn $i/house
+
+	REPORTNAME= $()
+
+
+
+
+done
